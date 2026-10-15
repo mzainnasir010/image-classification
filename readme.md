@@ -1,8 +1,8 @@
 <div align="center">
 
-# SceneSense — Scene Image Classifier
+# SceneSense: Scene Image Classifier
 
-**A fine-tuned ResNet50 that classifies photos into six scene categories, with calibrated confidence and an honest "uncertain" outcome — served by a FastAPI backend and a React web app.**
+**A fine-tuned ResNet50 that classifies photos into six scene categories, with calibrated confidence and an honest "uncertain" outcome served by a FastAPI backend and a React web app.**
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.20-FF6F00?logo=tensorflow&logoColor=white)
@@ -25,8 +25,8 @@
 5. [Modelling Approach](#modelling-approach)
 6. [Evaluation](#evaluation)
 7. [Calibrated Confidence and the "Uncertain" Outcome](#calibrated-confidence-and-the-uncertain-outcome)
-8. [Backend — FastAPI Service](#backend--fastapi-service)
-9. [Frontend — React Web App](#frontend--react-web-app)
+8. [Backend: FastAPI Service](#backend--fastapi-service)
+9. [Frontend: React Web App](#frontend--react-web-app)
 10. [Quick Start](#quick-start)
 11. [Testing](#testing)
 12. [Limitations](#limitations)
@@ -128,14 +128,14 @@ image-classification/
 
 ## Dataset and Data Preparation
 
-**Source:** [Intel Image Classification (Kaggle)](https://www.kaggle.com/datasets/puneet6060/intel-image-classification) — natural and urban scenes in six classes. The notebook merges the original `seg_train` and `seg_test` folders (17,034 labelled images) and builds its own split.
+**Source:** [Intel Image Classification (Kaggle)](https://www.kaggle.com/datasets/puneet6060/intel-image-classification) natural and urban scenes in six classes. The notebook merges the original `seg_train` and `seg_test` folders (17,034 labelled images) and builds its own split.
 
 ### Cleaning
 
 | Check | Result |
 |---|---|
 | Corrupted or unreadable files | 0 |
-| Images not 150×150 | 55 (0.32%), minimum height 72 px — kept |
+| Images not 150×150 | 55 (0.32%), minimum height 72 px kept |
 | Exact duplicate files (MD5) | 36 files in 18 groups |
 | Duplicate groups with **conflicting labels** | 13 |
 | Removed (conflicting-label duplicates) | 26 |
@@ -230,8 +230,8 @@ Normalisation lives **inside** the model, so the saved artefact accepts raw 0–
 
 | Stage | What trains | Learning rate | Max epochs |
 |---|---|---|---|
-| 1 — Head only | New classifier head, frozen backbone | 1e-3 | 15 |
-| 2 — Fine-tuning | Last 30 backbone layers (40 for EfficientNetB0), **BatchNorm kept frozen** | 1e-4 | 20 |
+| 1: Head only | New classifier head, frozen backbone | 1e-3 | 15 |
+| 2:  Fine-tuning | Last 30 backbone layers (40 for EfficientNetB0), **BatchNorm kept frozen** | 1e-4 | 20 |
 
 ### Full configuration
 
@@ -245,7 +245,7 @@ Normalisation lives **inside** the model, so the saved artefact accepts raw 0–
 | Seed | 42 |
 | Input pipeline | `tf.data` with in-RAM uint8 cache; 186 train / 40 validation steps per epoch |
 
-### Experiment 1 — backbone comparison (frozen backbone, identical settings)
+### Experiment 1: backbone comparison (frozen backbone, identical settings)
 
 | Backbone | Params | Best epoch | Train acc | Val acc | Val loss |
 |---|---:|---:|---:|---:|---:|
@@ -259,7 +259,7 @@ MobileNetV2 was rejected (lowest accuracy, not converged by epoch 15). ResNet50 
   <img src="Model%20training%20%28Notebook%20%2B%20Output%20Files%29/figures/backbone_comparison.png" alt="Backbone comparison on validation data" width="760">
 </p>
 
-### Experiment 2 — fine-tuning (validation data only; test set untouched)
+### Experiment 2: fine-tuning (validation data only; test set untouched)
 
 | Model | Epochs run | Best epoch | Train acc | Val acc | Val loss | Trainable params |
 |---|---:|---:|---:|---:|---:|---:|
@@ -341,7 +341,7 @@ The model made **146 errors** in 2,551 images. Four confusion directions explain
 
 ### Temperature scaling
 
-Fine-tuned networks are typically overconfident. Temperature scaling divides the log-probabilities by a single learned constant **T** before the softmax. It **never changes the predicted class** (verified in the notebook) — it only makes the confidence honest.
+Fine-tuned networks are typically overconfident. Temperature scaling divides the log-probabilities by a single learned constant **T** before the softmax. It **never changes the predicted class** (verified in the notebook) it only makes the confidence honest.
 
 ```
 calibrated = softmax( log(clip(p, 1e-12, 1)) / T ),   T = 1.677
@@ -381,7 +381,7 @@ Confidence is informative: wrong predictions average **0.722**, correct ones **0
 
 ---
 
-## Backend — FastAPI Service
+## Backend: FastAPI Service
 
 The service loads the Keras model **once at startup** (with a warm-up inference so the first request is not slow), then serves predictions over REST. Interactive docs are generated automatically at `/docs` (Swagger) and `/redoc`.
 
@@ -455,7 +455,7 @@ Example response (values illustrative):
 
 | Field | Meaning |
 |---|---|
-| `predicted_class` | Top class — **always returned** |
+| `predicted_class` | Top class **always returned** |
 | `confidence` | Calibrated probability of the top class (0–1) |
 | `is_uncertain` | `true` when `confidence < threshold` |
 | `outcome` | Same as `predicted_class`, or `"uncertain"` below the threshold |
@@ -499,7 +499,7 @@ The model file is close to GitHub's 100 MB limit. Commit it, track it with Git L
 
 ---
 
-## Frontend — React Web App
+## Frontend: React Web App
 
 A responsive, accessible single-page app for uploading images and inspecting results.
 
@@ -533,7 +533,7 @@ A responsive, accessible single-page app for uploading images and inspecting res
 ### Design principles
 
 - **Single HTTP boundary.** Components never call `fetch` or build URLs; everything goes through `src/api/client.ts` and typed endpoint wrappers. Response types in `src/api/types.ts` mirror the backend's Pydantic schemas.
-- **Typed error handling.** An `ApiError` class with a `kind` discriminant (`validation`, `tooLarge`, `unsupported`, `server`, `network`, `timeout`, `cancelled`) is mapped to friendly user messages — raw backend errors are never shown.
+- **Typed error handling.** An `ApiError` class with a `kind` discriminant (`validation`, `tooLarge`, `unsupported`, `server`, `network`, `timeout`, `cancelled`) is mapped to friendly user messages raw backend errors are never shown.
 - **Fail-fast configuration.** All settings are read from `VITE_*` variables and validated with Zod at startup; the app refuses to start with a clear message if one is missing or malformed. No URLs are hardcoded.
 - **Client-side pre-validation.** File type and size are checked before upload.
 - **Live backend status.** A health poll drives a status badge so users know when the model is starting up.
