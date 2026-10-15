@@ -1,0 +1,18 @@
+{
+  "model_file": "resnet50_inference.keras",
+  "classes": [
+    "buildings",
+    "forest",
+    "glacier",
+    "mountain",
+    "sea",
+    "street"
+  ],
+  "image_size": 224,
+  "resize_method": "bilinear",
+  "input_range": "raw 0 to 255 RGB, preprocessing is inside the model",
+  "temperature": 1.677255379888841,
+  "uncertain_threshold": 0.7,
+  "test_accuracy": 0.9428,
+  "test_macro_f1": 0.9437
+}

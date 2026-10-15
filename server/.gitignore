@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.pytest_cache/
+.ipynb_checkpoints/
+*.zip
+# The model file (97 MB) is under GitHub's 100 MB limit but close to it.
+# Decide: commit it, use Git LFS, or attach it to a GitHub Release.
