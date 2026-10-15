@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SceneSense — Scene Classification</title>
+    <meta
+      name="description"
+      content="SceneSense classifies photos of natural and urban scenes into six categories using a fine-tuned ResNet50 with calibrated confidence and honest uncertainty detection."
+    />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SceneSense — Scene Classification" />
+    <meta
+      property="og:description"
+      content="Upload a photo and identify the scene: buildings, forest, glacier, mountain, sea or street. 94.3% accuracy, calibrated confidence."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="SceneSense" />
+    <meta
+      name="twitter:description"
+      content="Scene classification powered by ResNet50 with calibrated confidence."
+    />
+
+    <!-- Prevent flash of wrong theme — must run before any render -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('scenesense:theme');
+          var resolved =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+          if (resolved === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Skip to content for keyboard users -->
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+/* Entry point — just import the design system. All tokens and utilities live in globals.css */
+@import "./styles/globals.css";
